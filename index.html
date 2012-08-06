@@ -108,7 +108,7 @@ h1.page-header{
                 <div class="description">
                     <ul>
                         <li><strong>部署代码：</strong>可以手动部署（即创建应用、上传代码）或者在线安装<span class="small">（还没有通过审核o(︶︿︶)o）</span>。</li>
-                        <li><strong>配置程序：</strong>如果是手动部署，则要先在SAE后台创建一个storage的domain。然后设置index.php，修改下面的四个常量：
+                        <li><strong>配置程序：</strong>如果是手动部署，则要先在SAE后台开启KVDB。然后设置index.php，修改下面的四个常量：
 <pre>
 /**
  * 网站静态文件的根目录对应的URL地址
@@ -116,7 +116,7 @@ h1.page-header{
 define('STATIC_URL','http://www.baidu.com/');
 
 /**
- * SAE storage的domain
+ * SAE storage的domain,已经使用KVDB,该变量失效
  * */
 define('DOMAIN','cdn');
 
