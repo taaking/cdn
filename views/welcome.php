@@ -110,7 +110,7 @@ h1.page-header{
                 <div class="description"> 
                     <ul> 
                         <li><strong>部署代码：</strong>可以手动部署（即创建应用、上传代码）或者在线安装<span class="small">（还没有通过审核o(︶︿︶)o）</span>。</li> 
-                        <li><strong>配置程序：</strong>如果是手动部署，则要先在SAE后台创建一个storage的domain。然后设置index.php，修改下面的四个常量：
+                        <li><strong>配置程序：</strong>如果是手动部署，则要先在SAE后台开启KVDB。然后设置index.php，修改下面的四个常量：
 <?php
 $code = <<<CODE
 <?php
@@ -120,7 +120,7 @@ $code = <<<CODE
 define('STATIC_URL','http://www.baidu.com/');
 
 /**
- * SAE storage的domain
+ * SAE storage的domain,使用KVDB,该变量废弃
  * */
 define('DOMAIN','cdn');
 
@@ -145,14 +145,15 @@ highlight_string($code);
             <div class="unit"> 
                 <h2>原理</h2> 
                 <div class="description"> 
-                    <p>大致就是取静态内容的过程中增加一个SAE层：前端从SAE取静态文件，当该文件是第一次被访问时，SAE从源服务器上取文件并保存到自己的storage里，然后返回给前端；之后就直接从SAE取而不需要再访问源服务器了。这样的好处就是在源服务器端可以实现无痛切换，不用使用像又拍CDN之类的API进行专门的编程，用户资源仍保存在源服务器上，只要将静态资源的前缀改为SAE的网址就行了，当不想使用CDN时可以再改回来。</p><p>例如，源文件地址是http://www.creatist.cn/avatar/21223.jpg（或者相对地址/avatar/21223.jpg），前端使用CDN，访问地址改成http://cdnxxx.sinaapp.com/avatar/21223.jpg（这通常是非常容易修改的）。SAE首先检查/avatar/21223.jpg在storage中是否已存在，如果存在即以前已经被访问过的话就直接取出来；如果不存在就从http://www.creatist.cn/avatar/21223.jpg保存到storage，以后就直接从storage里面取了。</p><p>SAE层还能实现其他很多功能，例如设置浏览器缓存、防盗链等等。</p> 
+                    <p>大致就是取静态内容的过程中增加一个SAE层：前端从SAE取静态文件，当该文件是第一次被访问时，SAE从源服务器上取文件并保存到自己的KVDB里，然后返回给前端；之后就直接从SAE取而不需要再访问源服务器了。这样的好处就是在源服务器端可以实现无痛切换，不用使用像又拍CDN之类的API进行专门的编程，用户资源仍保存在源服务器上，只要将静态资源的前缀改为SAE的网址就行了，当不想使用CDN时可以再改回来。</p><p>例如，源文件地址是http://www.creatist.cn/avatar/21223.jpg（或者相对地址/avatar/21223.jpg），前端使用CDN，访问地址改成http://cdnxxx.sinaapp.com/avatar/21223.jpg（这通常是非常容易修改的）。SAE首先检查/avatar/21223.jpg在storage中是否已存在，如果存在即以前已经被访问过的话就直接取出来；如果不存在就从http://www.creatist.cn/avatar/21223.jpg保存到storage，以后就直接从storage里面取了。</p><p>SAE层还能实现其他很多功能，例如设置浏览器缓存、防盗链等等。</p> 
                 </div> 
             </div> 
             <div class="unit"> 
                 <h2>其他</h2> 
                 <div class="description"> 
                     <p>SaeLayerCDN还在完善中，项目的Github地址是：<a href="https://github.com/Slacken/cdn">https://github.com/Slacken/cdn</a>，欢迎fork和贡献代码。</p> 
-                    <p>我的博客是：<a href="http://blog.creatist.cn/">http://blog.creatist.cn/</a></p> 
+                    <p>原作者的博客是：<a href="http://blog.creatist.cn/">http://blog.creatist.cn/</a></p> 
+                    <p>我的博客是：<a href="http://www.tk369.com/">http://www.tk369.com/</a></p> 
                     <p><a href="http://sae.sina.com.cn/"><img src="http://static.sae.sina.com.cn/image/poweredby/120X33_transparent.gif" width="120" height="33" /></a></p> 
                 </div> 
             </div> 
