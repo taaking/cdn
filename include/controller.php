@@ -9,6 +9,8 @@ class controller{
 	public $succeed ;
 	
 	public $error_type;
+        
+        public $urlpath;
 	
 	public function __construct($request = ''){
 		
@@ -61,27 +63,83 @@ class controller{
 	 * 如果stroage里面不存在，则从URL里面获取
 	 * */
 	private function handle($filename){
+          //$debugflag = false;
+          //$debugmsg = '';
+          $this->urlpath = $filename;
+          if($filename == 'debug')
+            //$debugflag = true;
+        
 		$content = '';
 		if($this->succeed){
-			$storage = new storage();
-			if($storage->exists($filename)){
-				$content = $storage->read($filename);
-			}else{
-				$content = @file_get_contents(BASE_URL.$filename);
-				$storage->write($filename, $content);
-			}
-			if(empty($content)){
-				$this->error_type = 3;
-				$this->succeed = FALSE;
-			}else{
-				//这里应该有更多的检查
-			}
+                  //$storage = new storage();
+                  
+                  //$expired = $this->getExpired($filename);//getExpired($filename)
+                  //if($debugflag)$debugmsg.='\n<br />expired='.$expired;
+                  //  if($debugflag)$debugmsg.='\n<br />max expired='.EXPIREDTIME;
+                  //$expiredFlag = false;
+                  //if(!($expired === false)){
+                  //  if(time() - $expired < EXPIREDTIME){
+                  //    $expiredFlag = true;
+                  //  }else{
+                  //    $expiredFlag = false;
+                  //  }
+                  //}
+                  //if($debugflag)$debugmsg.='\n<br />expiredFlag='.$expiredFlag;
+                  
+                  $kv = new SaeKV();
+        	  $ret = $kv->init();
+                  $key = md5($filename);
+                  $content = $kv->get($key);
+                   if($content === false){
+                   	$content = @file_get_contents(BASE_URL.$filename);
+                        $kv->set($key, $content);
+                   }
+                   
+                  // if($storage->exists($filename)){
+                      //if($debugflag)$debugmsg.='\n<br />read content!';
+                  //       $content = $storage->read($filename);
+                  // }else{
+                  //    //if($debugflag)$debugmsg.='\n<br />download content!';
+                  //       $content = @file_get_contents(BASE_URL.$filename);
+                  //        $storage->write($filename, $content);
+                          
+                      //if($expiredFlag === false){
+                      //   $this->setExpired($filename);
+                      //   if($debugflag)$debugmsg.='\n<br />setExpired';
+                      // }
+                      //  }
+                    
+                    
+                    if(empty($content)){
+                            $this->error_type = 3;
+                            $this->succeed = FALSE;
+                    }else{
+                            //这里应该有更多的检查
+                    }
 		}
 		//显示内容
-		$this->render($content);
+          //if($debugflag)echo $debugmsg;
+          //if(!$debugflag)
+                $this->render($content);
 	}
-	
-	
+        
+  /*private function getExpired($filename){
+        $key = "fileExpired_".md5($filename);
+        $kv = new SaeKV();
+        $ret = $kv->init();
+        $result = $kv->get($key);
+
+        return $result;
+      }
+      
+      private function setExpired($filename){
+        $key = "fileExpired_".md5($filename);
+        $kv = new SaeKV();
+        $ret = $kv->init();
+        $result = $kv->set($key,time());
+      }
+
+*/
 	/**
 	 * 输出结果，包括缓存控制等
 	 * */
@@ -100,6 +158,8 @@ class controller{
 	 * 处理错误
 	 * */
 	private function error(){
+        	header('HTTP/1.1 302 Found');//发出302头部 
+		header('Location: '.BASE_URL.$this->urlpath);
 		echo "<strong>something seems wrong.</strong>";
 	}
 	
